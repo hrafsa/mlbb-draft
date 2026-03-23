@@ -111,3 +111,17 @@ The system evaluates each draft state in real time:
 Deploy this project using any Next.js-compatible platform (for example Vercel).
 
 - Next.js deployment docs: https://nextjs.org/docs/app/building-your-application/deploying
+
+### Vercel Daily Refresh (3 PM WIB)
+
+This project includes a Vercel cron schedule in `vercel.json`:
+
+- `0 8 * * *` (UTC), which is `15:00` WIB.
+
+The cron calls `GET /api/cron/refresh-heroes` and refreshes cached hero data.
+
+Required environment variable:
+
+- `CRON_SECRET`: token used as `Authorization: Bearer <CRON_SECRET>`.
+
+Set this variable in your Vercel project settings so the refresh endpoint stays protected.

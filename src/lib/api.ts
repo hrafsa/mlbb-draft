@@ -1,8 +1,11 @@
+import { unstable_cache } from "next/cache";
+
 const API_BASE = "https://api.gms.moontontech.com/api/gms/source/2669606";
 const STATS_ENDPOINT = `${API_BASE}/2756567`;
 const RELATIONS_ENDPOINT = `${API_BASE}/2756564`;
 
 const REVALIDATE_SECONDS = 86400;
+export const HERO_CACHE_TAG = "merged-heroes";
 
 export type DraftRole = "1" | "2" | "3" | "4" | "5";
 
@@ -280,7 +283,7 @@ function calculateBaseScore(winRate: number, banRate: number, appearanceRate: nu
   return winRate * 0.5 + banRate * 0.3 + appearanceRate * 0.2;
 }
 
-export async function getMergedHeroes(): Promise<MergedHero[]> {
+async function fetchMergedHeroesUncached(): Promise<MergedHero[]> {
   try {
     const [statsResponse, relationResponse] = await Promise.all([
       fetchMoonton<unknown>(STATS_ENDPOINT, statsBody),
@@ -349,3 +352,7 @@ export async function getMergedHeroes(): Promise<MergedHero[]> {
     return [];
   }
 }
+
+export const getMergedHeroes = unstable_cache(fetchMergedHeroesUncached, [HERO_CACHE_TAG], {
+  tags: [HERO_CACHE_TAG],
+});
